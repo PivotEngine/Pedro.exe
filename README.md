@@ -11,4 +11,4 @@ Currently has:
 * Hide/Show GUI
 * Chat translator
 
-![]([Proof.gif)
+![](Proof.gif)
