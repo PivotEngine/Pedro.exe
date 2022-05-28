@@ -232,16 +232,17 @@ local CreateUI = function()
 						SelectedLanguage = key
 					end
 				end
-				for _, value in next, SaveIt do
+				for key, value in next, SaveIt do
 					if value and value[1] then
 						local LinkFrom = 'https://translate.googleapis.com/translate_a/single?client=gtx&dt=t&sl=' .. SelectedLanguage:lower() .. '&tl=en&q='
-
-						local EncodeUrl = HttpService:UrlEncode(value[1])
+						
+						local ChatGet = value[1]
+						local EncodeUrl = HttpService:UrlEncode(ChatGet)
 						local GetType = game:HttpGet(LinkFrom .. EncodeUrl, true) 
 
 						local Result = HttpService:JSONDecode(GetType)[1][1][1]
 						
-						SaveIt[_] = {value[1], Result}
+						SaveIt[key] = {ChatGet, Result}
 						
 						task.wait()
 					end
