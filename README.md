@@ -1,4 +1,4 @@
-# Pedro.exe // Google Translate Between Your Hands
+# Pedro.exe | Google Translate Between Your Hands
 
 Pedro.exe is a GUI I created to translate anything you type in your client!
 
