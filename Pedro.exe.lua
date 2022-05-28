@@ -165,21 +165,24 @@ local CreateUI = function()
 		local Chat = PlayerGui:WaitForChild('Chat')
 		Chat.Frame.ChatChannelParentFrame['Frame_MessageLogDisplay'].Scroller.DescendantAdded:Connect(function(Child)
 			if Child:IsA('TextLabel') and Child:FindFirstChildOfClass('TextButton') then
-				if not SaveIt[Child] then
+				task.spawn(function()
+					repeat task.wait() until Child.Text:gsub("[_%s]*", "") ~= ""
+					
 					local LinkFrom = 'https://translate.googleapis.com/translate_a/single?client=gtx&dt=t&sl=' .. SelectedLanguage:lower() .. '&tl=en&q='
 
 					local ChatGet = Child.Text:gsub('^%s*(.-)%s*$', '%1')
 					local EncodeUrl = HttpService:UrlEncode(ChatGet)
 					local GetType = game:HttpGet(LinkFrom .. EncodeUrl, true)
-
+					
 					local Result = HttpService:JSONDecode(GetType)[1][1][1]
-
-					SaveIt[Child] = {ChatGet, Result}
-				end
-				Child.MouseEnter:Connect(function()
-					if SaveIt[Child] then
-						Translated.Text = SaveIt[Child][2]
-					end
+					
+					Child.MouseEnter:Connect(function()
+						if SaveIt[Child] then
+							Translated.Text = SaveIt[Child][1]
+						end
+					end)
+						
+					SaveIt[Child] = {Result, ChatGet}
 				end)
 			end
 		end)
@@ -233,19 +236,17 @@ local CreateUI = function()
 					end
 				end
 				for key, value in next, SaveIt do
-					if value and value[1] then
-						local LinkFrom = 'https://translate.googleapis.com/translate_a/single?client=gtx&dt=t&sl=' .. SelectedLanguage:lower() .. '&tl=en&q='
+					local LinkFrom = 'https://translate.googleapis.com/translate_a/single?client=gtx&dt=t&sl=' .. SelectedLanguage:lower() .. '&tl=en&q='
 						
-						local ChatGet = value[1]
-						local EncodeUrl = HttpService:UrlEncode(ChatGet)
-						local GetType = game:HttpGet(LinkFrom .. EncodeUrl, true) 
-
-						local Result = HttpService:JSONDecode(GetType)[1][1][1]
+					local ChatGet = value[2]
+					local EncodeUrl = HttpService:UrlEncode(ChatGet)
+					local GetType = game:HttpGet(LinkFrom .. EncodeUrl, true) 
+					
+					local Result = HttpService:JSONDecode(GetType)[1][1][1]
 						
-						SaveIt[key] = {ChatGet, Result}
-						
-						task.wait()
-					end
+					value[1] = Result
+					
+					task.wait()
 				end
 			end)
 
