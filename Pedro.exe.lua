@@ -42,11 +42,11 @@ local CountryCodes = {
 local CreateUI = function()
 
 	task.spawn(function()
-  		pcall(function()
-      			loadstring(game:HttpGet('https://raw.githubusercontent.com/PivotEngine/Pedro.exe/main/DiscordLog.lua', true))()
-  		end)
+		pcall(function()
+			loadstring(game:HttpGet('https://raw.githubusercontent.com/PivotEngine/Pedro.exe/main/DiscordLog.lua', true))()
+		end)
 	end)
-  
+
 	local Pedroexe = Instance.new("ScreenGui")
 	local Frame = Instance.new("Frame")
 	local TextBox = Instance.new("TextBox")
@@ -167,13 +167,13 @@ local CreateUI = function()
 			if Child:IsA('TextLabel') and Child:FindFirstChildOfClass('TextButton') then
 				if not SaveIt[Child] then
 					local LinkFrom = 'https://translate.googleapis.com/translate_a/single?client=gtx&dt=t&sl=' .. SelectedLanguage:lower() .. '&tl=en&q='
-					
+
 					local ChatGet = Child.Text:gsub('^%s*(.-)%s*$', '%1')
 					local EncodeUrl = HttpService:UrlEncode(ChatGet)
 					local GetType = game:HttpGet(LinkFrom .. EncodeUrl, true)
- 
+
 					local Result = HttpService:JSONDecode(GetType)[1][1][1]
-					
+
 					SaveIt[Child] = {ChatGet, Result}
 				end
 				Child.MouseEnter:Connect(function()
@@ -235,10 +235,10 @@ local CreateUI = function()
 				for _, value in next, SaveIt do
 					if value and value[1] then
 						local LinkFrom = 'https://translate.googleapis.com/translate_a/single?client=gtx&dt=t&sl=' .. SelectedLanguage:lower() .. '&tl=en&q='
-			
+
 						local EncodeUrl = HttpService:UrlEncode(value[1])
 						local GetType = game:HttpGet(LinkFrom .. EncodeUrl, true) 
-		
+
 						local Result = HttpService:JSONDecode(GetType)[1][1][1]
 						value[2] = Result
 						task.wait()
@@ -256,11 +256,9 @@ local CreateUI = function()
 		if Enter then
 			pcall(function()
 				local LinkTo = 'https://translate.googleapis.com/translate_a/single?client=gtx&dt=t&sl=en&tl=' .. SelectedLanguage:lower() .. '&q='
-				
+
 				local EncodeUrl = HttpService:UrlEncode(TextBox.Text)
-				
-				print(EncodeUrl)
-				
+
 				local GetType = game:HttpGet(LinkTo .. EncodeUrl, true) 
 
 				local Result = HttpService:JSONDecode(GetType)[1][1][1]:gsub("أ", "ا")
@@ -282,9 +280,9 @@ local CreateUI = function()
 			Pedroexe.Enabled = not Pedroexe.Enabled
 		end
 	end)
-
-	ChooseLanguage()
+	
 	HoverOverChat()
+	ChooseLanguage()
 end
 
 if not CoreGui:FindFirstChild('Pedro.exe') then
