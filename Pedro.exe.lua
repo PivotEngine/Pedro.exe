@@ -240,7 +240,9 @@ local CreateUI = function()
 						local GetType = game:HttpGet(LinkFrom .. EncodeUrl, true) 
 
 						local Result = HttpService:JSONDecode(GetType)[1][1][1]
-						value[2] = Result
+						
+						SaveIt[_] = {value[1], Result}
+						
 						task.wait()
 					end
 				end
