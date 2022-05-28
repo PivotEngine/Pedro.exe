@@ -11,10 +11,4 @@ Currently has:
 * Hide/Show GUI
 * Chat translator
 
-![](Test/Images/assorted.gif)
-
-![](Test/Images/dropdown.gif)
-
-![](Test/Images/slider.gif)
-
-![](Test/Images/radialmenu.gif)
+![]([Proof.gif)
