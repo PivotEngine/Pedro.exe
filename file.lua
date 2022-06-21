@@ -1,4 +1,4 @@
-Tables = {
+_G.Tables = {
 "ONE!",
 "TWO!",
 "THREE!",
