@@ -1,4 +1,4 @@
-{
+[
 "ONE!",
 "TWO!",
 "THREE!",
@@ -999,4 +999,4 @@
 "NINE HUNDRED NINETY EIGHT!",
 "NINE HUNDRED NINETY NINE!",
 "ONE THOUSAND!"
-}
+]
