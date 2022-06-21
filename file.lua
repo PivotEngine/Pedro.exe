@@ -1,4 +1,4 @@
-_G.Tables = {
+local Tables = {
 "ONE!",
 "TWO!",
 "THREE!",
