@@ -1,4 +1,4 @@
-local Table = {
+Tables = {
 "ONE!",
 "TWO!",
 "THREE!",
