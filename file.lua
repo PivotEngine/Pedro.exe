@@ -1,4 +1,4 @@
-local Tables = {
+{
 "ONE!",
 "TWO!",
 "THREE!",
